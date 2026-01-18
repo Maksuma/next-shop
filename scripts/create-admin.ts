@@ -28,9 +28,6 @@ async function createAdmin() {
     password: hashedPassword,
   })
   console.log("New admin created!")
-
-  const users = await db.select().from(userTable)
-  console.log("Getting all users from the database: ", users)
 }
 
 createAdmin()

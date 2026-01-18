@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 
-const protectedRoutes = ["/dashboard"]
+const protectedRoutes = ["/(admin)/dashboard"]
 const authRoutes = ["/auth/login"]
 
 export async function proxy(request: NextRequest) {
@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Проверка на роль админа для admin маршрутов
-  if (pathname.startsWith("/dashboard") && session?.user?.role !== "admin") {
+  if (pathname.startsWith("/(admin)/dashboard") && session?.user?.role !== "admin") {
     return NextResponse.redirect(new URL("/", request.url))
   }
 
@@ -36,5 +36,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/protected/:path*", "/auth/login"],
+  matcher: ["/(admin)/dashboard/:path*", "/api/protected/:path*", "/auth/login"],
 }

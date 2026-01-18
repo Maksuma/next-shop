@@ -87,13 +87,32 @@ export const card = pgTable("card", {
   price: text("price").notNull(),
   discountPrice: text("discount_price"),
   atStock: integer("at_stock").notNull(),
-  category: text("category").notNull(),
+  categoryId: text("category_id")
+    .notNull()
+    .references(() => category.id, { onDelete: "cascade" }),
   colors: text("colors").array(),
   hasColors: boolean("has_colors").default(false).notNull(),
   sizes: text("sizes").array(),
   hasSizes: boolean("has_sizes").default(false).notNull(),
   images: text("images").array().notNull(),
 })
+
+export const category = pgTable("category", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  linkName: text("link_name").notNull(),
+})
+
+export const cardRelations = relations(card, ({ one }) => ({
+  category: one(category, {
+    fields: [card.categoryId],
+    references: [category.id],
+  }),
+}))
+
+export const categoryRelations = relations(category, ({ many }) => ({
+  cards: many(card),
+}))
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),

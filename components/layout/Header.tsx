@@ -12,7 +12,7 @@ import { Button } from "../ui/button"
 import { headerMenu } from "./header-menu.data"
 
 export function Header() {
-  const { data: session, isPending: loading } = authClient.useSession()
+  const { data: session } = authClient.useSession()
   const [hasAdminPermissions, setHasAdminPermissions] = useState(false)
 
   useEffect(() => {

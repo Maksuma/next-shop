@@ -1,14 +1,9 @@
-import ProductItem from "@/components/layout/ProductItem"
-import { db } from "@/db"
-import { card } from "@/db/schema"
+import ProductGrid from "@/components/layout/ProductGrid"
 
-export default async function Home() {
-  const product = await db.select().from(card)
+export default function Home() {
   return (
-    <div>
-      {product.map(item => (
-        <ProductItem key={item.id} {...item} />
-      ))}
+    <div className='mt-8'>
+      <ProductGrid />
     </div>
   )
 }

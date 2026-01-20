@@ -1,5 +1,5 @@
 import fs from "fs"
-import { NextRequest } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import path from "path"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const filePath = path.join(process.cwd(), "uploads", ...pathSegments)
 
     if (!fs.existsSync(filePath)) {
-      return new Response("File not found", { status: 404 })
+      return new NextResponse("File not found", { status: 404 })
     }
 
     const fileBuffer = fs.readFileSync(filePath)
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         ".svg": "image/svg+xml",
       }[ext] || "application/octet-stream"
 
-    return new Response(fileBuffer, {
+    return new NextResponse(fileBuffer, {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "public, max-age=31536000, immutable",
@@ -32,6 +32,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
   } catch (error) {
     console.error("Error serving file:", error)
-    return new Response("Internal Server Error", { status: 500 })
+    return new NextResponse("Internal Server Error", { status: 500 })
   }
 }

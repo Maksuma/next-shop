@@ -5,7 +5,7 @@ import { drizzle } from "drizzle-orm/node-postgres"
 
 const db = drizzle(process.env.DATABASE_URL!)
 
-async function createAdmin() {
+export async function createAdmin() {
   const email = process.env.ADMIN_EMAIL!
   const name = process.env.ADMIN_NAME!
   const hashedPassword = await hashPassword(process.env.ADMIN_PASSWORD!)
@@ -29,5 +29,3 @@ async function createAdmin() {
   })
   console.log("New admin created!")
 }
-
-createAdmin()

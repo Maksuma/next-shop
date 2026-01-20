@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm"
-import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core"
+import { boolean, index, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -78,16 +78,16 @@ export const verification = pgTable(
   table => [index("verification_identifier_idx").on(table.identifier)],
 )
 
-export const card = pgTable("card", {
-  id: text("id").primaryKey(),
+export const product = pgTable("product", {
+  id: serial("id").primaryKey().notNull(),
   name: text("name").notNull(),
   linkName: text("link_name").notNull(),
   description: text("description"),
   specifications: text("specifications").array(),
-  price: text("price").notNull(),
-  discountPrice: text("discount_price"),
+  price: integer("price").notNull(),
+  discountPrice: integer("discount_price"),
   atStock: integer("at_stock").notNull(),
-  categoryId: text("category_id")
+  categoryId: serial("category_id")
     .notNull()
     .references(() => category.id, { onDelete: "cascade" }),
   colors: text("colors").array(),
@@ -95,23 +95,46 @@ export const card = pgTable("card", {
   sizes: text("sizes").array(),
   hasSizes: boolean("has_sizes").default(false).notNull(),
   images: text("images").array().notNull(),
+  isPopular: boolean("is_popular").default(false).notNull(),
 })
 
+export const productImage = pgTable(
+  "product_image",
+  {
+    id: serial("id").primaryKey(),
+    productId: serial("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    order: integer("order").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  table => [index("product_image_productId_idx").on(table.productId), index("product_image_order_idx").on(table.order)],
+)
+
 export const category = pgTable("category", {
-  id: text("id").primaryKey(),
+  id: serial("id").primaryKey().notNull(),
   name: text("name").notNull(),
   linkName: text("link_name").notNull(),
 })
 
-export const cardRelations = relations(card, ({ one }) => ({
+export const productRelations = relations(product, ({ one, many }) => ({
   category: one(category, {
-    fields: [card.categoryId],
+    fields: [product.categoryId],
     references: [category.id],
+  }),
+  productImages: many(productImage),
+}))
+
+export const productImageRelations = relations(productImage, ({ one }) => ({
+  product: one(product, {
+    fields: [productImage.productId],
+    references: [product.id],
   }),
 }))
 
 export const categoryRelations = relations(category, ({ many }) => ({
-  cards: many(card),
+  products: many(product),
 }))
 
 export const userRelations = relations(user, ({ many }) => ({

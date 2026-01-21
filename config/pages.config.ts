@@ -18,4 +18,8 @@ export class PagesConfig {
   // admin
   static readonly DASHBOARD = "/dashboard"
   static readonly DASHBOARD_PRODUCTS = "/dashboard/products"
+  static readonly DASHBOARD_CATEGORIES = "/dashboard/categories"
+  static readonly DASHBOARD_ORDERS = "/dashboard/orders"
+  static readonly DASHBOARD_USERS = "/dashboard/users"
+  static readonly DASHBOARD_SETTINGS = "/dashboard/settings"
 }

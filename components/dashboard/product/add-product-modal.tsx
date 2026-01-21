@@ -1,6 +1,5 @@
 "use client"
 
-import { ImageUploadManager } from "@/components/dashboard/image-upload-manager"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -17,10 +16,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { TCategory } from "@/db"
 import { EditProductFormValues, editProductSchema } from "@/lib/validations/product-schema"
+import { truncateText } from "@/utils/truncate-text"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { ImageUploadManager } from "../image-upload-manager"
 
 interface AddProductModalProps {
   categories: TCategory[]
@@ -41,8 +42,25 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
       categoryId: categories[0]?.id || 1,
       isPopular: false,
       images: [],
+      specifications: [],
     },
   })
+
+  const handleCategoryChange = (newCategoryId: number) => {
+    form.setValue("categoryId", newCategoryId)
+
+    const category = categories.find(c => c.id === newCategoryId)
+    if (category?.specifications) {
+      const currentSpecs = form.getValues("specifications") || []
+      const newSpecs = category.specifications.map(name => {
+        const existing = currentSpecs.find(s => s.name === name)
+        return existing || { name, value: "" }
+      })
+      form.setValue("specifications", newSpecs)
+    } else {
+      form.setValue("specifications", [])
+    }
+  }
 
   const onSubmit = async (data: EditProductFormValues) => {
     try {
@@ -70,7 +88,7 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>Добавить продукт</DialogTitle>
           <DialogDescription>Заполните информацию о новом продукте</DialogDescription>
@@ -172,28 +190,36 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
               <FormField
                 control={form.control}
                 name='categoryId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Категория *</FormLabel>
-                    <Select onValueChange={value => field.onChange(Number(value))} value={field.value?.toString()}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Выберите категорию' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories
-                          .filter(c => c.id !== undefined)
-                          .map(category => (
-                            <SelectItem key={category.id} value={category.id!.toString()}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const selectedCategory = categories.find(c => c.id === field.value)
+                  return (
+                    <FormItem>
+                      <FormLabel>Категория *</FormLabel>
+                      <Select
+                        onValueChange={value => handleCategoryChange(Number(value))}
+                        value={field.value?.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder='Выберите категорию'>
+                              {selectedCategory ? truncateText(selectedCategory.name, 20) : "Выберите категорию"}
+                            </SelectValue>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories
+                            .filter(c => c.id !== undefined)
+                            .map(category => (
+                              <SelectItem key={category.id} value={category.id.toString()}>
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
               />
             </div>
 
@@ -208,6 +234,36 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
                   <div className='space-y-1 leading-none'>
                     <FormLabel>Популярный товар</FormLabel>
                   </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='specifications'
+              render={({ field }) => (
+                <FormItem>
+                  {field.value && field.value.length > 0 && (
+                    <>
+                      <FormLabel>Характеристики</FormLabel>
+                      <div className='space-y-3'>
+                        {field.value.map((spec, index) => (
+                          <div key={index} className='space-y-2'>
+                            <FormLabel className='text-sm font-normal'>{spec.name}</FormLabel>
+                            <Input
+                              placeholder={`Введите ${spec.name.toLowerCase()}`}
+                              value={spec.value}
+                              onChange={e => {
+                                const updatedSpecs = [...(field.value || [])]
+                                updatedSpecs[index].value = e.target.value
+                                field.onChange(updatedSpecs)
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </FormItem>
               )}
             />

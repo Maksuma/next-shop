@@ -1,4 +1,5 @@
 import "@/app/globals.css"
+import { AdminSidebar } from "@/components/layout/AdminSidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { auth } from "@/lib/auth"
 import type { Metadata } from "next"
@@ -35,13 +36,14 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang='en'>
+    <html lang='ru'>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className='container mx-auto'>
-          <div className='flex-1 p-4'>
+        <div className='min-h-screen bg-gray-50'>
+          <AdminSidebar />
+          <main className='ml-0 lg:ml-64 p-6 lg:p-8'>
             <Toaster position='top-right' />
             {children}
-          </div>
+          </main>
         </div>
       </body>
     </html>

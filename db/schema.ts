@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm"
-import { boolean, index, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core"
+import { boolean, index, integer, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -83,7 +83,7 @@ export const product = pgTable("product", {
   name: text("name").notNull(),
   linkName: text("link_name").notNull(),
   description: text("description"),
-  specifications: text("specifications").array(),
+  specifications: jsonb("specifications").$type<Array<{ name: string; value: string }>>(),
   price: integer("price").notNull(),
   discountPrice: integer("discount_price"),
   atStock: integer("at_stock").notNull(),
@@ -116,6 +116,7 @@ export const category = pgTable("category", {
   id: serial("id").primaryKey().notNull(),
   name: text("name").notNull(),
   linkName: text("link_name").notNull(),
+  specifications: text("specifications").array(),
 })
 
 export const productRelations = relations(product, ({ one, many }) => ({

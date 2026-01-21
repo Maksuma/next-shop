@@ -11,6 +11,14 @@ export const editProductSchema = z.object({
   categoryId: z.number().min(1, "Категория обязательна для выбора"),
   isPopular: z.boolean(),
   images: z.array(z.string()).min(1, "Необходимо добавить хотя бы одно изображение"),
+  specifications: z
+    .array(
+      z.object({
+        name: z.string(),
+        value: z.string(),
+      }),
+    )
+    .optional(),
 })
 
 export type EditProductFormValues = z.infer<typeof editProductSchema>

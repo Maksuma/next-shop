@@ -29,3 +29,5 @@ export async function createAdmin() {
   })
   console.log("New admin created!")
 }
+
+createAdmin()

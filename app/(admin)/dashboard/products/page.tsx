@@ -1,6 +1,6 @@
 "use client"
 
-import { ProductsTable } from "@/components/dashboard/products-table"
+import { ProductsTable } from "@/components/dashboard/product/products-table"
 import { useCategories, useProducts } from "@/hooks/useFetch"
 
 export default function DashboardProductsPage() {
@@ -10,13 +10,14 @@ export default function DashboardProductsPage() {
   const loading = productsLoading || categoriesLoading
 
   return (
-    <div className='container mx-auto py-6'>
-      <div className='mb-6'>
-        <h1 className='text-3xl font-bold'>Продукты</h1>
-        <p className='text-muted-foreground mt-2'>Управление продуктами магазина</p>
+    <div>
+      <h1 className='text-3xl font-bold mb-6'>Продукты</h1>
+      <div className='bg-white rounded-lg shadow p-6 mb-6'>
+        <p className='text-muted-foreground'>Управление продуктами магазина</p>
       </div>
-
-      <ProductsTable products={products || []} categories={categories || []} loading={loading} onRefetch={refetch} />
+      <div className='bg-white rounded-lg shadow p-6'>
+        <ProductsTable products={products || []} categories={categories || []} loading={loading} onRefetch={refetch} />
+      </div>
     </div>
   )
 }

@@ -4,9 +4,23 @@ import { NextRequest, NextResponse } from "next/server"
 
 const protectedRoutes = ["/dashboard"]
 const authRoutes = ["/auth/login"]
+const allowedIPS = process.env.ALLOWED_ADMINS_IPS ? JSON.parse(process.env.ALLOWED_ADMINS_IPS) : []
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (allowedIPS.length > 0) {
+    console.log("Client IP:", allowedIPS)
+
+    if (pathname.startsWith("/dashboard")) {
+      const clientIP = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || ""
+
+      if (clientIP && !allowedIPS.includes(clientIP)) {
+        console.log(`Access denied for IP: ${clientIP}`)
+        return NextResponse.redirect(new URL("/", request.url))
+      }
+    }
+  }
 
   const session = await auth.api.getSession({
     headers: await headers(),

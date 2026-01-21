@@ -10,12 +10,12 @@ import path from "path"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params
+    const id = Number((await params).id)
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "Неверный ID продукта" }, { status: 400 })
+    }
 
-    const newProduct = await db
-      .select()
-      .from(product)
-      .where(eq(product.id, Number(id)))
+    const newProduct = await db.select().from(product).where(eq(product.id, id))
     return NextResponse.json(newProduct, { status: 200 })
   } catch (error) {
     console.error("Ошибка при получении продукта:", error)
@@ -29,9 +29,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   try {
     const body = await request.json()
-    const { id } = await params
+    const id = Number((await params).id)
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "Неверный ID продукта" }, { status: 400 })
+    }
 
-    const { name, description, price, discountPrice, atStock, categoryId, isPopular, images } = body
+    const { name, description, price, discountPrice, atStock, categoryId, isPopular, images, specifications } = body
 
     if (!name || price === undefined || price < 0 || atStock === undefined || !categoryId) {
       return NextResponse.json({ error: "Отсутствуют обязательные поля или неверные значения" }, { status: 400 })
@@ -66,8 +69,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         categoryId,
         isPopular: isPopular || false,
         images: updatedImages,
+        specifications: specifications || [],
       })
-      .where(eq(product.id, Number(id)))
+      .where(eq(product.id, id))
       .returning()
 
     if (!updatedProduct || updatedProduct.length === 0) {
@@ -89,11 +93,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   if (session instanceof NextResponse) return session
 
   try {
-    const { id } = await params
-    const deletedCount = await db
-      .delete(product)
-      .where(eq(product.id, Number(id)))
-      .returning()
+    const id = Number((await params).id)
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "Неверный ID продукта" }, { status: 400 })
+    }
+    const deletedCount = await db.delete(product).where(eq(product.id, id)).returning()
 
     if (deletedCount.length === 0) {
       return NextResponse.json({ error: "Продукт не найден" }, { status: 404 })

@@ -1,7 +1,8 @@
 import { db } from "@/db"
 import { category } from "@/db/schema"
 import { requireAdmin } from "@/lib/auth-guard"
-import { NextResponse } from "next/server"
+import { slugGenerator } from "@/utils/slug-generator"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function GET() {
   try {
@@ -13,20 +14,28 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const session = await requireAdmin()
   if (session instanceof NextResponse) return session
 
   try {
-    const { name } = await request.json()
+    const { name, specifications } = await request.json()
 
     if (!name || typeof name !== "string") {
       return NextResponse.json({ error: "Неверные данные" }, { status: 400 })
     }
-    const linkName = name.toLowerCase().replace(/\s+/g, "-")
+    const linkName = slugGenerator(name)
 
-    const newCategory = await db.insert(category).values({ name, linkName })
-    return NextResponse.json(newCategory, { status: 201 })
+    const newCategory = await db
+      .insert(category)
+      .values({
+        name,
+        linkName,
+        specifications: specifications || null,
+      })
+      .returning()
+
+    return NextResponse.json(newCategory[0], { status: 201 })
   } catch (error) {
     console.error("Ошибка при создании категории:", error)
     return NextResponse.json({ error: "Внутренняя ошибка сервера" }, { status: 500 })

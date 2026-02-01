@@ -141,7 +141,7 @@ export function ProductsTable({ products, categories, loading, onRefetch }: Prod
                     <div>
                       <p>{product.name}</p>
                       {product.description && (
-                        <p className='text-sm text-muted-foreground line-clamp-1 mt-1'>{product.description}</p>
+                        <p className='text-sm text-muted-foreground mt-1'>{product.description.slice(0, 50)}...</p>
                       )}
                     </div>
                   </TableCell>

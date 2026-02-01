@@ -117,6 +117,7 @@ export const category = pgTable("category", {
   name: text("name").notNull(),
   linkName: text("link_name").notNull(),
   specifications: text("specifications").array(),
+  image: text("image").notNull(),
 })
 
 export const productRelations = relations(product, ({ one, many }) => ({

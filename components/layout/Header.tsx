@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Search } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Fragment } from "react/jsx-runtime"
 import { Button } from "../ui/button"
@@ -14,6 +15,9 @@ import { headerMenu } from "./header-menu.data"
 export function Header() {
   const { data: session } = authClient.useSession()
   const [hasAdminPermissions, setHasAdminPermissions] = useState(false)
+  const router = useRouter()
+
+  console.log("Header session:", session)
 
   useEffect(() => {
     authClient.admin.hasPermission({ permission: { user: ["set-role"] } }).then(({ data }) => {
@@ -62,6 +66,20 @@ export function Header() {
             <Link href={PagesConfig.DASHBOARD}>Dashboard</Link>
           </Button>
         )}
+        <Button
+          asChild
+          onClick={() => {
+            authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  router.push(PagesConfig.HOME)
+                },
+              },
+            })
+          }}
+        >
+          <span>Logout</span>
+        </Button>
       </div>
     </header>
   )

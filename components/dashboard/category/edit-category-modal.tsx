@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { QueriesConfig } from "@/config/queries.config"
 import { TCategory } from "@/db"
 import { addCategorySchema } from "@/lib/validations/category-schema"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
+import { ImageUploadManager } from "../image-upload-manager"
 
 type EditCategoryFormValues = z.infer<typeof addCategorySchema>
 
@@ -38,6 +40,7 @@ export function EditCategoryModal({ category, open, onOpenChange, onCategoryUpda
     defaultValues: {
       name: category.name,
       specifications: category.specifications || [],
+      images: [category.image],
     },
   })
 
@@ -46,6 +49,7 @@ export function EditCategoryModal({ category, open, onOpenChange, onCategoryUpda
     form.reset({
       name: category.name,
       specifications: category.specifications || [],
+      images: [category.image],
     })
   }, [category, form])
 
@@ -66,15 +70,17 @@ export function EditCategoryModal({ category, open, onOpenChange, onCategoryUpda
 
   const onSubmit = async (data: EditCategoryFormValues) => {
     try {
-      const response = await fetch(`/api/category/${category.id}`, {
-        method: "PATCH",
+      const response = await fetch(QueriesConfig.CATEGORY_UPDATE(category.id), {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...data,
           specifications: specifications.length > 0 ? specifications : null,
+          images: data.images,
         }),
+        credentials: "include",
       })
 
       if (!response.ok) {
@@ -92,8 +98,9 @@ export function EditCategoryModal({ category, open, onOpenChange, onCategoryUpda
 
   const onDelete = async () => {
     try {
-      const response = await fetch(`/api/category/${category.id}`, {
+      const response = await fetch(QueriesConfig.CATEGORY_DELETE(category.id), {
         method: "DELETE",
+        credentials: "include",
       })
 
       if (!response.ok) {
@@ -171,6 +178,24 @@ export function EditCategoryModal({ category, open, onOpenChange, onCategoryUpda
                 </div>
               )}
             </div>
+            <FormField
+              control={form.control}
+              name='images'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Изображения *</FormLabel>
+                  <FormControl>
+                    <ImageUploadManager
+                      images={field.value}
+                      onChange={field.onChange}
+                      maxImages={1}
+                      productName={form.watch("name")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter className='gap-2'>
               <Button type='button' variant='destructive' onClick={onDelete}>

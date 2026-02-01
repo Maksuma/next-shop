@@ -14,11 +14,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { QueriesConfig } from "@/config/queries.config"
 import { TCategory } from "@/db"
 import { EditProductFormValues, editProductSchema } from "@/lib/validations/product-schema"
 import { truncateText } from "@/utils/truncate-text"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { ImageUploadManager } from "../image-upload-manager"
@@ -46,6 +48,17 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
     },
   })
 
+  useEffect(() => {
+    if (open && categories.length > 0) {
+      const currentCategoryId = form.getValues("categoryId")
+      const category = categories.find(c => c.id === currentCategoryId)
+      if (category?.specifications) {
+        const specs = category.specifications.map(name => ({ name, value: "" }))
+        form.setValue("specifications", specs)
+      }
+    }
+  }, [open, categories, form])
+
   const handleCategoryChange = (newCategoryId: number) => {
     form.setValue("categoryId", newCategoryId)
 
@@ -64,12 +77,13 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
 
   const onSubmit = async (data: EditProductFormValues) => {
     try {
-      const response = await fetch("/api/product", {
+      const response = await fetch(QueriesConfig.PRODUCT_CREATE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       })
 
       if (!response.ok) {
@@ -287,7 +301,14 @@ export function AddProductModal({ categories, open, onOpenChange, onProductAdded
             />
 
             <DialogFooter>
-              <Button type='button' variant='outline' onClick={() => onOpenChange(false)}>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => {
+                  onOpenChange(false)
+                  form.reset()
+                }}
+              >
                 Отмена
               </Button>
               <Button type='submit' disabled={form.formState.isSubmitting}>

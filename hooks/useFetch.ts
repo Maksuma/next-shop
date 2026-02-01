@@ -1,3 +1,4 @@
+import { QueriesConfig } from "@/config/queries.config"
 import { TCategory, TProduct } from "@/db"
 import useSWR from "swr"
 
@@ -23,17 +24,17 @@ export function useFetch<T>(url: string | null) {
 }
 
 export function useProducts() {
-  return useFetch<TProduct[]>("/api/product")
+  return useFetch<TProduct[]>(QueriesConfig.PRODUCT_LIST)
 }
 
 export function useCategories() {
-  return useFetch<TCategory[]>("/api/category")
+  return useFetch<TCategory[]>(QueriesConfig.CATEGORY_LIST)
 }
 
-export function useProduct(id: string | number | null) {
-  return useFetch<TProduct>(id ? `/api/product/${id}` : null)
+export function useProduct(id: string | number) {
+  return useFetch<TProduct>(QueriesConfig.PRODUCT_DETAILS(id))
 }
 
 export function usePopularProducts() {
-  return useFetch<TProduct[]>("/api/product?popular=true")
+  return useFetch<TProduct[]>(QueriesConfig.PRODUCT_LIST + "?popular=true")
 }

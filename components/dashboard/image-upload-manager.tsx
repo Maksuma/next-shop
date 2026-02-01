@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { QueriesConfig } from "@/config/queries.config"
 import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core"
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
@@ -39,6 +40,8 @@ function SortableImage({ image, onRemove }: SortableImageProps) {
     opacity: isDragging ? 0.5 : 1,
   }
 
+  console.log("Rendering SortableImage for", image)
+
   return (
     <div
       ref={setNodeRef}
@@ -76,7 +79,7 @@ export function ImageUploadManager({ images, onChange, maxImages = 10, productNa
   const [imageItems, setImageItems] = useState<ImageItem[]>(
     images.map((url, index) => ({
       id: `${url}-${index}`,
-      url,
+      url: url,
       order: index,
     })),
   )
@@ -102,30 +105,34 @@ export function ImageUploadManager({ images, onChange, maxImages = 10, productNa
         const uploadPromises = acceptedFiles.map(async file => {
           const formData = new FormData()
           formData.append("file", file)
+          formData.append("type", window.location.pathname)
 
           // Добавляем название продукта, если оно есть
           if (productName) {
             formData.append("productName", productName)
           }
 
-          const response = await fetch("/api/upload", {
+          const response = await fetch(QueriesConfig.UPLOAD_IMAGE, {
             method: "POST",
             body: formData,
+            credentials: "include",
           })
+
+          console.log("Upload response status:", response)
 
           if (!response.ok) {
             throw new Error(`Ошибка загрузки ${file.name}`)
           }
 
           const data = await response.json()
-          return data.url
+          return data.urls[0]
         })
 
         const uploadedUrls = await Promise.all(uploadPromises)
 
         const newImageItems: ImageItem[] = uploadedUrls.map((url, index) => ({
           id: `${url}-${Date.now()}-${index}`,
-          url,
+          url: url,
           order: imageItems.length + index,
         }))
 

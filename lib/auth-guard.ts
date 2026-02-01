@@ -3,6 +3,7 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 
 export async function requireAdmin() {
+  // TODO: переделать на запрос к express серверу
   const session = await auth.api.getSession({
     headers: await headers(),
   })

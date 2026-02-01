@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { QueriesConfig } from "@/config/queries.config"
 import { TCategory, TProduct } from "@/db"
 import { EditProductFormValues, editProductSchema } from "@/lib/validations/product-schema"
 import { truncateText } from "@/utils/truncate-text"
@@ -78,12 +79,13 @@ export function EditProductModal({ product, categories, open, onOpenChange, onPr
 
   const onSubmit = async (data: EditProductFormValues) => {
     try {
-      const response = await fetch(`/api/product/${product.id}`, {
-        method: "PATCH",
+      const response = await fetch(QueriesConfig.PRODUCT_UPDATE(product.id), {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       })
 
       if (!response.ok) {
@@ -101,8 +103,9 @@ export function EditProductModal({ product, categories, open, onOpenChange, onPr
 
   const onDelete = async (id: number) => {
     try {
-      const response = await fetch(`/api/product/${id}`, {
+      const response = await fetch(QueriesConfig.PRODUCT_DELETE(id), {
         method: "DELETE",
+        credentials: "include",
       })
 
       if (!response.ok) {

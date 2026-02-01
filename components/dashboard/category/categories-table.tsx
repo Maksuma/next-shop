@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { TCategory } from "@/db"
 import { Pencil } from "lucide-react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { CategoriesFilters } from "./categories-filters"
@@ -76,11 +77,11 @@ export function CategoriesTable({ categories, loading, onRefetch }: CategoriesTa
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className='w-[80px]'>ID</TableHead>
+              <TableHead className='w-25'>Изображение</TableHead>
               <TableHead>Название</TableHead>
               <TableHead>Link Name</TableHead>
-              <TableHead className='w-[200px]'>Характеристики</TableHead>
-              <TableHead className='w-[100px]'>Действия</TableHead>
+              <TableHead className='w-50'>Характеристики</TableHead>
+              <TableHead className='w-25'>Действия</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -113,7 +114,17 @@ export function CategoriesTable({ categories, loading, onRefetch }: CategoriesTa
             ) : (
               filteredCategories.map(category => (
                 <TableRow key={category.id}>
-                  <TableCell className='font-medium'>{category.id}</TableCell>
+                  <TableCell>
+                    <div className='relative w-16 h-16 rounded-md overflow-hidden bg-muted'>
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        fill
+                        className='object-cover'
+                        sizes='(max-width: 768px) 100vw, 16vw'
+                      />
+                    </div>
+                  </TableCell>
                   <TableCell className='font-medium'>{category.name}</TableCell>
                   <TableCell className='text-muted-foreground'>{category.linkName}</TableCell>
                   <TableCell>

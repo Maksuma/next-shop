@@ -11,12 +11,14 @@ import {
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { QueriesConfig } from "@/config/queries.config"
 import { AddCategoryFormValues, addCategorySchema } from "@/lib/validations/category-schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Plus, X } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { ImageUploadManager } from "../image-upload-manager"
 
 interface AddCategoryModalProps {
   open: boolean
@@ -33,6 +35,7 @@ export function AddCategoryModal({ open, onOpenChange, onCategoryAdded }: AddCat
     defaultValues: {
       name: "",
       specifications: [],
+      images: [],
     },
   })
 
@@ -53,7 +56,7 @@ export function AddCategoryModal({ open, onOpenChange, onCategoryAdded }: AddCat
 
   const onSubmit = async (data: AddCategoryFormValues) => {
     try {
-      const response = await fetch("/api/category", {
+      const response = await fetch(QueriesConfig.CATEGORY_CREATE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,6 +65,7 @@ export function AddCategoryModal({ open, onOpenChange, onCategoryAdded }: AddCat
           ...data,
           specifications: specifications.length > 0 ? specifications : null,
         }),
+        credentials: "include",
       })
 
       if (!response.ok) {
@@ -142,6 +146,25 @@ export function AddCategoryModal({ open, onOpenChange, onCategoryAdded }: AddCat
                 </div>
               )}
             </div>
+
+            <FormField
+              control={form.control}
+              name='images'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Изображения *</FormLabel>
+                  <FormControl>
+                    <ImageUploadManager
+                      images={field.value}
+                      onChange={field.onChange}
+                      productName={form.watch("name") || "temp-product"}
+                      maxImages={1}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button type='button' variant='outline' onClick={() => onOpenChange(false)}>

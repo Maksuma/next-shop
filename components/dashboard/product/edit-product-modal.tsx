@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { QueriesConfig } from "@/config/queries.config"
 import { TCategory, TProduct } from "@/db"
 import { EditProductFormValues, editProductSchema } from "@/lib/validations/product-schema"
+import { revalidateProducts } from "@/utils/revalidate"
 import { truncateText } from "@/utils/truncate-text"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
@@ -95,6 +96,7 @@ export function EditProductModal({ product, categories, open, onOpenChange, onPr
       toast.success("Продукт успешно обновлен")
       onProductUpdated()
       onOpenChange(false)
+      await revalidateProducts()
     } catch (error) {
       toast.error("Не удалось обновить продукт")
       console.error(error)

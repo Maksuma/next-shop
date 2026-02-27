@@ -96,6 +96,8 @@ export const product = pgTable("product", {
   hasSizes: boolean("has_sizes").default(false).notNull(),
   images: text("images").array().notNull(),
   isPopular: boolean("is_popular").default(false).notNull(),
+  reviewsCount: integer("reviews_count").default(0).notNull(),
+  rating: integer("rating").default(0).notNull(),
 })
 
 export const productImage = pgTable(

@@ -1,5 +1,4 @@
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { getCookieCache } from "better-auth/cookies"
 import { NextRequest, NextResponse } from "next/server"
 
 const protectedRoutes = ["/dashboard"]
@@ -22,9 +21,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+  const session = await getCookieCache(request, { secret: process.env.BETTER_AUTH_SECRET })
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))

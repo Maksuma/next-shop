@@ -10,9 +10,15 @@ export class PagesConfig {
   static readonly CART = "/cart"
   static readonly ORDERS = "/orders"
   static readonly FAVORITES = "/favorites"
+  static readonly CATEGORY = "/category"
+  static readonly PRODUCT = "/product"
+
+  static CATEGORY_DETAILS(slug: string) {
+    return `/category/${slug}`
+  }
 
   static PRODUCT_DETAILS(slug: string) {
-    return `/products/${slug}`
+    return `/product/${slug}`
   }
 
   // admin

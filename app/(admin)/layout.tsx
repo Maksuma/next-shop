@@ -1,11 +1,11 @@
 import "@/app/globals.css"
 import { AdminSidebar } from "@/components/layout/AdminSidebar"
 import { Toaster } from "@/components/ui/sonner"
-import { auth } from "@/lib/auth"
+import { QueriesConfig } from "@/config/queries.config"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { redirect, RedirectType } from "next/navigation"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +27,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const session = await fetch(QueriesConfig.USER_SESSION, {
+    method: "GET",
+    headers: {
+      cookie: (await headers()).get("cookie") || "",
+    },
+    credentials: "include",
   })
+    .then(res => res.json())
+    .catch(() => null)
 
   if (!session || session.user.role !== "admin") {
-    redirect("/")
+    redirect("/", RedirectType.replace)
   }
 
   return (

@@ -17,8 +17,6 @@ export function Header() {
   const [hasAdminPermissions, setHasAdminPermissions] = useState(false)
   const router = useRouter()
 
-  console.log("Header session:", session)
-
   useEffect(() => {
     authClient.admin.hasPermission({ permission: { user: ["set-role"] } }).then(({ data }) => {
       setHasAdminPermissions(data?.success ?? false)

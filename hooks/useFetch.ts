@@ -10,8 +10,8 @@ const fetcher = (url: string) =>
 
 export function useFetch<T>(url: string | null) {
   const { data, error, isLoading, mutate } = useSWR<T>(url, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
   })
 
   return {
@@ -27,8 +27,16 @@ export function useProducts() {
   return useFetch<TProduct[]>(QueriesConfig.PRODUCT_LIST)
 }
 
+export function useProductsInCategory(id: string | number) {
+  return useFetch<TProduct[]>(QueriesConfig.PRODUCTS_IN_CATEGORIES(id))
+}
+
 export function useCategories() {
   return useFetch<TCategory[]>(QueriesConfig.CATEGORY_LIST)
+}
+
+export function useCategoryBySlug(slug: string) {
+  return useFetch<TCategory>(QueriesConfig.CATEGORY_BY_SLUG(slug))
 }
 
 export function useProduct(id: string | number) {

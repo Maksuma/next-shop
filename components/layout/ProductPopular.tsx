@@ -1,14 +1,15 @@
-"use client"
+import { TProduct } from "@/db"
 
-import { usePopularProducts } from "@/hooks/useFetch"
+interface ProductPopularProps {
+  products: TProduct[]
+}
 
-export default function ProductPopular() {
-  const { data } = usePopularProducts()
+export default function ProductPopular({ products }: ProductPopularProps) {
   return (
     <div>
       <h2>Popular Products</h2>
       <ul>
-        {data?.map(product => (
+        {products.map(product => (
           <li key={product.id}>{product.name}</li>
         ))}
       </ul>

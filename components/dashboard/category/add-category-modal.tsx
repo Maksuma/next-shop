@@ -13,6 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { QueriesConfig } from "@/config/queries.config"
 import { AddCategoryFormValues, addCategorySchema } from "@/lib/validations/category-schema"
+import { revalidateCategories } from "@/utils/revalidate"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Plus, X } from "lucide-react"
 import { useState } from "react"
@@ -78,6 +79,7 @@ export function AddCategoryModal({ open, onOpenChange, onCategoryAdded }: AddCat
       setNewSpec("")
       onCategoryAdded()
       onOpenChange(false)
+      await revalidateCategories()
     } catch (error) {
       toast.error("Не удалось создать категорию")
       console.error(error)

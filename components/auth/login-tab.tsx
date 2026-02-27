@@ -26,6 +26,7 @@ export function LoginTab() {
     authClient.signIn.email(
       { ...data, callbackURL: "/" },
       {
+        credentials: "include",
         onError: error => {
           toast.error(error.error.status === 401 ? "Неверные учетные данные" : "Ошибка при входе")
         },

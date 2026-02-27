@@ -2,15 +2,17 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function SkeletonProductItem() {
   return (
-    <div className='border rounded p-4 shadow-sm flex flex-col'>
-      <Skeleton className='w-full h-[200px]' />
-      <div className='mt-4 flex-1 flex flex-col justify-between'>
-        <div>
-          <Skeleton className='h-6 w-3/4 mb-2' />
-          <Skeleton className='h-4 w-full mb-1' />
-          <Skeleton className='h-4 w-5/6' />
+    <div className='flex flex-col border border-border rounded-2xl overflow-hidden bg-card'>
+      <Skeleton className='aspect-square w-full rounded-none' />
+      <div className='flex flex-col gap-2 p-3.5'>
+        <Skeleton className='h-4 w-4/5' />
+        <Skeleton className='h-4 w-3/5' />
+        <div className='flex items-end justify-between mt-1'>
+          <div className='flex flex-col gap-1'>
+            <Skeleton className='h-5 w-20' />
+            <Skeleton className='h-3 w-14' />
+          </div>
         </div>
-        <Skeleton className='mt-2 h-7 w-24' />
       </div>
     </div>
   )

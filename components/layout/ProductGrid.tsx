@@ -1,25 +1,15 @@
-"use client"
-
-import { useProducts } from "@/hooks/useFetch"
+import { TProduct } from "@/db"
 import ProductItem from "./ProductItem"
-import SkeletonProductItem from "./skeleton/SkeletonProductItem"
 
-export default function ProductGrid() {
-  const { data: products, isLoading } = useProducts()
+interface ProductGridProps {
+  products: TProduct[]
+}
 
-  if (isLoading)
-    return (
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <SkeletonProductItem key={i} />
-        ))}
-      </div>
-    )
-
-  if (!products) return null
+export default function ProductGrid({ products }: ProductGridProps) {
+  if (!products.length) return <p className='text-sm text-muted-foreground py-6'>Нет продуктов для отображения.</p>
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+    <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
       {products.map(item => (
         <ProductItem key={item.id} {...item} />
       ))}

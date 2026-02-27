@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { QueriesConfig } from "@/config/queries.config"
 import { TCategory } from "@/db"
 import { addCategorySchema } from "@/lib/validations/category-schema"
+import { revalidateCategories } from "@/utils/revalidate"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Plus, X } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -90,6 +91,7 @@ export function EditCategoryModal({ category, open, onOpenChange, onCategoryUpda
       toast.success("Категория успешно обновлена")
       onCategoryUpdated()
       onOpenChange(false)
+      await revalidateCategories()
     } catch (error) {
       toast.error("Не удалось обновить категорию")
       console.error(error)

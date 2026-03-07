@@ -12,6 +12,8 @@ export class PagesConfig {
   static readonly FAVORITES = "/favorites"
   static readonly CATEGORY = "/category"
   static readonly PRODUCT = "/product"
+  static readonly CHECKOUT_SUCCESS = "/checkout/success"
+  static readonly CHECKOUT_CANCEL = "/checkout/cancel"
 
   static CATEGORY_DETAILS(slug: string) {
     return `/category/${slug}`

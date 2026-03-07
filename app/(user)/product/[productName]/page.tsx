@@ -1,10 +1,11 @@
+import { AddToCartButton } from "@/components/product/AddToCartButton"
 import { ProductImageCarousel } from "@/components/product/ProductImageCarousel"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { PagesConfig } from "@/config/pages.config"
 import { priceFormat } from "@/utils/price-firmat"
 import { getProductByName } from "@/utils/server-fetch"
-import { Check, ShoppingCart, X } from "lucide-react"
+import { Check, X } from "lucide-react"
 import Link from "next/link"
 
 export default async function ProductPage({ params }: { params: Promise<{ productName: string }> }) {
@@ -57,8 +58,8 @@ export default async function ProductPage({ params }: { params: Promise<{ produc
 
           {/* Цена */}
           <div className='flex items-baseline gap-3'>
-            <span className='text-4xl font-bold text-gray-900'>{priceFormat(finalPrice!)} ₽</span>
-            {hasDiscount && <span className='text-2xl text-gray-400 line-through'>{priceFormat(product.price)} ₽</span>}
+            <span className='text-4xl font-bold text-gray-900'>{priceFormat(finalPrice!)}</span>
+            {hasDiscount && <span className='text-2xl text-gray-400 line-through'>{priceFormat(product.price)}</span>}
           </div>
 
           {/* Наличие */}
@@ -101,10 +102,7 @@ export default async function ProductPage({ params }: { params: Promise<{ produc
 
           {/* Кнопка добавить в корзину */}
           <div className='bottom-4 bg-white pt-4 space-y-3'>
-            <Button size='lg' className='w-full text-lg h-14' disabled={product.atStock === 0}>
-              <ShoppingCart className='w-5 h-5 mr-2' />
-              {product.atStock > 0 ? "Добавить в корзину" : "Нет в наличии"}
-            </Button>
+            <AddToCartButton productId={product.id} atStock={product.atStock} />
             <Button size='lg' variant='outline' className='w-full text-lg h-14' disabled={product.atStock === 0}>
               Купить в один клик
             </Button>

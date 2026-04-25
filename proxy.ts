@@ -1,5 +1,6 @@
-import { getCookieCache } from "better-auth/cookies"
+import { headers } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "./lib/auth"
 
 const protectedRoutes = ["/dashboard"]
 const authRoutes = ["/auth/login"]
@@ -21,7 +22,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const session = await getCookieCache(request, { secret: process.env.BETTER_AUTH_SECRET })
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
@@ -32,7 +35,6 @@ export async function proxy(request: NextRequest) {
     loginUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(loginUrl)
   }
-
   // Если пользователь авторизован и пытается зайти на страницу входа
   if (isAuthRoute && session?.user) {
     return NextResponse.redirect(new URL("/", request.url))

@@ -24,8 +24,7 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 дней
     updateAge: 60 * 60 * 24, // обновлять каждые 24 часа
     cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60, // 5 минут кеш
+      enabled: false,
     },
   },
   plugins: [
@@ -35,14 +34,4 @@ export const auth = betterAuth({
     }),
     nextCookies(),
   ],
-  user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        required: false,
-        defaultValue: "user",
-        input: false,
-      },
-    },
-  },
 })

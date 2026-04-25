@@ -7,9 +7,9 @@ import { useCart } from "@/hooks/useFetch"
 import { CheckCircle, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get("session_id")
   const { mutate: mutateCart } = useCart()
@@ -62,5 +62,20 @@ export default function CheckoutSuccessPage() {
         </Button>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='flex flex-col items-center gap-4 text-center py-24'>
+          <Loader2 className='w-10 h-10 animate-spin text-muted-foreground' />
+          <p className='text-muted-foreground'>Подтверждаем оплату...</p>
+        </div>
+      }
+    >
+      <CheckoutSuccessContent />
+    </Suspense>
   )
 }

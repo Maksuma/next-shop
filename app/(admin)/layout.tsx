@@ -1,7 +1,7 @@
 import "@/app/globals.css"
 import { AdminSidebar } from "@/components/layout/AdminSidebar"
 import { Toaster } from "@/components/ui/sonner"
-import { QueriesConfig } from "@/config/queries.config"
+import { auth } from "@/lib/auth"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { headers } from "next/headers"
@@ -27,15 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await fetch(QueriesConfig.USER_SESSION, {
-    method: "GET",
-    headers: {
-      cookie: (await headers()).get("cookie") || "",
-    },
-    credentials: "include",
-  })
-    .then(res => res.json())
-    .catch(() => null)
+  const session = await auth.api.getSession({ headers: await headers() })
 
   if (!session || session.user.role !== "admin") {
     redirect("/", RedirectType.replace)
